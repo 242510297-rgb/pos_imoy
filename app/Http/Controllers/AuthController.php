@@ -9,13 +9,12 @@ use App\Http\Controllers\Controller;
 
 class AuthController extends Controller
 {
-    public function index ()
+    public function index()
     {
         return view('login');
     }
 
-
-    public function auth (LoginRequest $request)
+    public function auth(LoginRequest $request)
     {
         if (Auth::attempt($request->validated())) {
 
@@ -24,22 +23,24 @@ class AuthController extends Controller
             return redirect()->route('dashboard')->with('success', 'Selamat Datang, ' . Auth::user()->name);
         }
 
+        // Tambahkan onlyInput('email') agar teks email tidak ter-reset saat login gagal
         return back()->withErrors([
             'email' => 'Email atau password tidak valid.',
-        ]);
+        ])->onlyInput('email');
     }
 
-        public function logout (Request $request)
-        {
-            // Mengakhiri sesi pengguna
-            Auth::logout();
+    public function logout(Request $request)
+    {
+        // Mengakhiri sesi pengguna
+        Auth::logout();
 
-            // Menghapus sessi pengguna
-            $request->session()->invalidate();
-            // Meregenerasi token CSRF 
-            $request->session()->regenerateToken();
+        // Menghapus sesi pengguna
+        $request->session()->invalidate();
+        
+        // Meregenerasi token CSRF 
+        $request->session()->regenerateToken();
 
-            // Redirect ke halaman login setelah logout
-            return redirect()->route('login')->with('success', 'Anda telah keluar aplikasi!');    
+        // Redirect ke halaman login setelah logout
+        return redirect()->route('login')->with('success', 'Anda telah keluar aplikasi!');    
     }
 }

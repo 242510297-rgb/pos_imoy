@@ -3,18 +3,23 @@
 @section('title', 'Tambah Produk')
 
 @section('content')
-<h4>Tambah Produk</h4>
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-primary text-white p-3 rounded-top-4">
+                    <h5 class="mb-0 fw-bold">Tambah Produk</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form action="{{ route('produk.store') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
 
-<<<<<<< HEAD
-<form action="{{ route('admin.produk.store') }}"
-      method="POST"
-      enctype="multipart/form-data">
-    @include('produk._form')
-=======
-<form action="{{ route('produk.store') }}"
-      method="POST"
-      enctype="multipart/form-data">
-@include('produk._form')
->>>>>>> 5416f579df75a9e2876c6b243c75f303f353fc36
-</form>
+                        @include('produk._form')
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection

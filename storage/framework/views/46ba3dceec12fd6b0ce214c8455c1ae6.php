@@ -10,7 +10,7 @@
             <div class="mb-2">
                 <i class="bi bi-cart-check-fill display-5"></i>
             </div>
-            <h4 class="fw-bold mb-0"> POS Sweet Hugs Store</h4>
+            <h4 class="fw-bold mb-0"> POS Step Up Shoes Store</h4>
             <small class="text-white-50">Silakan masuk ke akun Anda</small>
         </div>
 

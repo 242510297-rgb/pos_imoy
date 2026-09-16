@@ -27,9 +27,13 @@ Route::middleware('auth')->group(function () {
     // Route Halaman Tentang
     Route::get('/tentang', [TentangController::class, 'index'])->name('tentang.index');
 
+    // Manajemen user hanya untuk admin
+    Route::middleware('role:admin')->group(function () {
+        Route::resource('users', UserController::class);
+    });
+
     // Route untuk Admin dan Kasir
     Route::middleware('role:admin,kasir')->group(function () {
-        Route::resource('users', UserController::class);
         Route::resource('produk', ProdukController::class);
         Route::resource('jenis', JenisController::class);
         Route::resource('penjualan', PenjualanController::class);

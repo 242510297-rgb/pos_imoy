@@ -29,9 +29,9 @@ class PenjualanController extends Controller
             // 🔎 Search nama user atau ID transaksi
             ->when($keyword, function ($query) use ($keyword) {
                 $query->where('id', 'like', '%' . $keyword . '%')
-                      ->orWhereHas('user', function ($q) use ($keyword) {
-                          $q->where('name', 'like', '%' . $keyword . '%');
-                      });
+                    ->orWhereHas('user', function ($q) use ($keyword) {
+                        $q->where('name', 'like', '%' . $keyword . '%');
+                    });
             })
             ->latest()
             ->paginate(10)
@@ -48,7 +48,7 @@ class PenjualanController extends Controller
         $sale = Penjualan::firstOrCreate(
             [
                 'user_id' => Auth::id(),
-                'status'  => 'OPEN'
+                'status' => 'OPEN'
             ],
             [
                 'total_pembayaran' => 0,
@@ -61,8 +61,8 @@ class PenjualanController extends Controller
         $keyword = $request->input('search');
 
         $products = Produk::when($keyword, function ($query) use ($keyword) {
-                $query->where('nama', 'like', '%' . $keyword . '%');
-            })
+            $query->where('nama', 'like', '%' . $keyword . '%');
+        })
             ->orderBy('nama')
             ->get();
 
@@ -109,10 +109,6 @@ class PenjualanController extends Controller
      */
     public function update(Request $request, Penjualan $penjualan)
     {
-        $request->validate([
-            'payment_method' => 'required|in:CASH,QRIS'
-        ]);
-
         if ($penjualan->status !== 'OPEN') {
             return back()->with('errors', 'Transaksi sudah diproses.');
         }
@@ -121,19 +117,34 @@ class PenjualanController extends Controller
             return back()->with('errors', 'Keranjang masih kosong.');
         }
 
-        DB::transaction(function () use ($penjualan, $request) {
-            // Hitung ulang total pembayaran dari item penjualan
-            $total = $penjualan->itemPenjualan()->sum('subtotal');
+        $total = (int) $penjualan->itemPenjualan()->sum('subtotal');
+        $validated = $request->validate([
+            'payment_method' => 'required|in:CASH,QRIS',
+            'amount_paid' => [
+                'required_if:payment_method,CASH',
+                'nullable',
+                'integer',
+                'min:' . $total,
+            ],
+        ]);
+        $amountPaid = $validated['payment_method'] === 'CASH'
+            ? (int) $validated['amount_paid']
+            : $total;
+        $change = $amountPaid - $total;
+
+        DB::transaction(function () use ($penjualan, $validated, $total, $amountPaid, $change) {
 
             $penjualan->update([
-                'metode_pembayaran' => $request->payment_method,
-                'total_pembayaran'  => $total,
-                'status'            => 'COMPLETED'
+                'metode_pembayaran' => $validated['payment_method'],
+                'total_pembayaran' => $total,
+                'uang_dibayar' => $amountPaid,
+                'kembalian' => $change,
+                'status' => 'COMPLETED'
             ]);
         });
 
         return redirect()
-            ->route('penjualan.index')
+            ->route('penjualan.show', $penjualan)
             ->with('success', 'Transaksi berhasil diselesaikan.');
     }
 

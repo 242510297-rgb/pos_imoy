@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-labelledby="title desc">
+  <title id="title">Barcode QRIS</title>
+  <desc id="desc">Contoh visual barcode QRIS untuk halaman pembayaran</desc>
+  <rect width="240" height="240" fill="#fff"/>
+  <g fill="#111">
+    <path d="M12 12h64v64H12zM24 24v40h40V24zM36 36h16v16H36z"/>
+    <path d="M164 12h64v64h-64zM176 24v40h40V24zM188 36h16v16h-16z"/>
+    <path d="M12 164h64v64H12zM24 176v40h40v-40zM36 188h16v16H36z"/>
+    <path d="M92 12h12v28H92zM116 12h12v12h-12zM140 12h12v40h-12zM92 52h28v12H92zM128 40h12v24h-12z"/>
+    <path d="M92 84h12v24H92zM116 76h12v20h-12zM140 76h12v32h-12zM164 88h24v12h-24zM200 84h28v12h-28z"/>
+    <path d="M84 116h24v12H84zM116 112h12v28h-12zM140 116h36v12h-36zM188 108h12v32h-12zM212 112h16v12h-16z"/>
+    <path d="M84 148h12v28H84zM104 148h28v12h-28zM140 148h12v36h-12zM164 148h28v12h-28zM204 148h24v12h-24z"/>
+    <path d="M92 188h12v28H92zM116 176h12v40h-12zM132 196h28v12h-28zM164 180h12v36h-12zM188 188h40v12h-40zM188 212h16v16h-16z"/>
+  </g>
+  <text x="120" y="236" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="700" fill="#111">QRIS</text>
+</svg>

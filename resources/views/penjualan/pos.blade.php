@@ -169,11 +169,49 @@
                     @csrf
                     @method('PUT')
                     
-                    <select name="payment_method" class="form-select mb-2" required {{ $sale->status === 'COMPLETED' ? 'disabled' : '' }}>
+                    <select name="payment_method"
+                            id="payment-method"
+                            class="form-select mb-2"
+                            required
+                            {{ $sale->status === 'COMPLETED' ? 'disabled' : '' }}>
                         <option value="">-- Pilih Metode Pembayaran --</option>
                         <option value="CASH">Cash (Tunai)</option>
                         <option value="QRIS">QRIS</option>
                     </select>
+
+                    <div id="cash-payment" class="border rounded p-3 mb-3 d-none"
+                         data-total="{{ $sale->itemPenjualan->sum('subtotal') }}">
+                        <label for="amount-paid" class="form-label fw-semibold">Uang Dibayar</label>
+                        <div class="input-group">
+                            <span class="input-group-text">Rp</span>
+                            <input type="number"
+                                   name="amount_paid"
+                                   id="amount-paid"
+                                   class="form-control"
+                                   min="{{ $sale->itemPenjualan->sum('subtotal') }}"
+                                   step="1"
+                                   inputmode="numeric"
+                                   placeholder="Masukkan nominal uang"
+                                   {{ $sale->status === 'COMPLETED' ? 'disabled' : '' }}>
+                        </div>
+                        <div class="d-flex justify-content-between mt-2 small">
+                            <span class="text-muted">Kembalian</span>
+                            <strong id="change-amount">Rp 0</strong>
+                        </div>
+                    </div>
+
+                    <div id="qris-payment" class="border rounded p-3 mb-3 text-center d-none">
+                        <p class="fw-semibold mb-2">Scan QRIS untuk membayar</p>
+                        <img src="{{ asset('images/qris.svg') }}"
+                             alt="QRIS pembayaran"
+                             class="img-fluid rounded"
+                             style="max-width: 240px;"
+                             onerror="this.classList.add('d-none'); this.nextElementSibling.classList.remove('d-none');">
+                        <p class="qris-missing text-muted small mb-0 d-none">
+                            QRIS belum tersedia. Simpan QRIS merchant sebagai
+                            <strong>public/images/qris.svg</strong>.
+                        </p>
+                    </div>
 
                     <button class="btn btn-success w-100 py-2 fw-semibold {{ $sale->status === 'COMPLETED' ? 'disabled' : '' }}">
                         Checkout / Selesaikan Transaksi
@@ -197,5 +235,34 @@
     </div>
 
 </div>
+
+<script>
+    const paymentMethod = document.getElementById('payment-method');
+    const qrisPayment = document.getElementById('qris-payment');
+    const cashPayment = document.getElementById('cash-payment');
+    const amountPaid = document.getElementById('amount-paid');
+    const changeAmount = document.getElementById('change-amount');
+    const totalPayment = Number(cashPayment?.dataset.total || 0);
+
+    const formatRupiah = (amount) => `Rp ${new Intl.NumberFormat('id-ID').format(Math.max(amount, 0))}`;
+
+    const updatePaymentFields = () => {
+        const isCash = paymentMethod?.value === 'CASH';
+        cashPayment?.classList.toggle('d-none', !isCash);
+        qrisPayment?.classList.toggle('d-none', paymentMethod?.value !== 'QRIS');
+
+        if (amountPaid) {
+            amountPaid.required = isCash;
+        }
+
+        const paid = Number(amountPaid?.value || 0);
+        if (changeAmount) {
+            changeAmount.textContent = formatRupiah(paid - totalPayment);
+        }
+    };
+
+    paymentMethod?.addEventListener('change', updatePaymentFields);
+    amountPaid?.addEventListener('input', updatePaymentFields);
+</script>
 
 @endsection

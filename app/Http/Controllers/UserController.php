@@ -19,13 +19,13 @@ class UserController extends Controller
     {
         $keyword = $request->input('search');
 
-    if($keyword) {
-    $users = User::whereRaw("MATCH(name, email) AGAINST(? IN BOOLEAN MODE)", [$keyword])
-        ->paginate(10)
-        ->withQueryString();
-    } else {
-    $users = User::query()->paginate(10)->withQueryString();
-   }
+        if ($keyword) {
+            $users = User::whereRaw("MATCH(name, email) AGAINST(? IN BOOLEAN MODE)", [$keyword])
+                ->paginate(10)
+                ->withQueryString();
+        } else {
+            $users = User::query()->paginate(10)->withQueryString();
+        }
 
         return view('users.index', compact('users'));
     }
@@ -54,7 +54,7 @@ class UserController extends Controller
 
         User::create($data);
 
-        return redirect()->route('admin.users')->with('success', 'User berhasil dibuat.');
+        return redirect()->route('users.index')->with('success', 'User berhasil dibuat.');
     }
 
     /**
@@ -92,7 +92,7 @@ class UserController extends Controller
 
         $user->save();
 
-        return redirect()->route('admin.users.edit', $user->id)->with('success', 'User update.');
+        return redirect()->route('users.edit', $user->id)->with('success', 'User update.');
     }
 
     /**
